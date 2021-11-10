@@ -11,24 +11,26 @@ const storage = document.getElementById("storage");
 let color = '#' + Math.floor(Math.random() * 16777215).toString(16); //random color generator
 let prev = -1;
 let primerIteration = 0;
-let colorPrimerMap = [];
+let colorPrimerArray = [];
+let primerInputArray = [];
 var result = "";
 
 //adds Primer Fields to input primer names
-//WIP
+//WIP: access primer names and use them in rest of document
 primerButton.addEventListener('click', function () {
     var newP = document.createElement("p");
 
     //loop to attach text input fields to paragraph element created above
     for (let y = 0; y < primers.value; y++) {
-        var primerInputArray = [];
         var textField = document.createElement("input");
         textField.type = "text";
+        textField.placeholder = "Primer Name";
         primerInputArray.push(textField); //adding textFields into an array to access their values
-        document.createElement("br");
         newP.appendChild(textField);
+        newP.appendChild(document.createElement("br"));
         document.getElementById("firstP").appendChild(newP);
     }
+    primerButton.remove();
 });
 //function called within calculate button function to 
 //determine the dimensions of the plate after size is chosen
@@ -60,6 +62,7 @@ calculate.addEventListener('click', function () {
     let columns = crArray[0];
     let rows = crArray[1];
     console.log(" columns:" + columns + " rows:" + rows + " plateSize:" + plateSize.value);
+    console.log(primers.value + " primers, " + samples.value + " samples, " + duplicates.value + " duplicates");
 
     var numPlates = (primers.value * samples.value * duplicates.value) / plateSize.value;
     var numPlatesRound = Math.ceil(numPlates); //Rounds the number of plates needed up to the next highest int
@@ -110,6 +113,7 @@ calculate.addEventListener('click', function () {
             }
         }
         //Loop to put elements in a table
+        //FIXME: Change random color to a color palette
         result += "<table border=1>";
         for (var l = 1; l <= rows; l++) {
             result += "<tr>";
@@ -119,14 +123,17 @@ calculate.addEventListener('click', function () {
                     isBlack = true;
                 } else if (gfg[l][k] === 1 && prev !== 1 && prev !== -1) {
                     color = '#' + Math.floor(Math.random() * 16777215).toString(16);
-                    colorPrimerMap.push(color);
+                    colorPrimerArray.push(color);
                 }
+                console.log(colorPrimerArray.length);
                 prev = gfg[l][k];
                 result += "<td style = 'background-color: " + (isBlack ? "#000000" : color) + "'>" + gfg[l][k] + "</td>";
             }
             result += "</tr>";
+            console.log(colorPrimerArray.length);
         }
         result += "</table>";
+        console.log(colorPrimerArray.length);
 
 
         // Loop to display the elements of 2D array. 
@@ -142,12 +149,24 @@ calculate.addEventListener('click', function () {
     }
 
     //writing out list of color
-    result += "<p>";
-    for (const c of colorPrimerMap) {
-        result += "primer: " + c;
-        result += `\n`;
+    //result += "<p>";
+    result += "<table border = 1>";
+    result += "<tr>";
+    for (const c of colorPrimerArray) { //FIXME: colorPrimerArray is only storing one color at this point...
+        result += "primer: <td style = 'background-color: " + c + "'>" + " HELLO! </td>"; //FIXME: replace HELLO! w/ primer name
+        result += "<br>";
     }
-    result += "</p>";
+    //result += "</p>";
+    result += "</tr>";
+    result += "</table>";
+    document.write(result);
+
+    //primerInputArray.foreach(element => result += element); Tried to use foreach to no avail
+    //Loop to add primer names to bottom of page
+    for (let primerCounter = 0; primerCounter < primerInputArray.length; primerCounter++) {
+        result += primerInputArray[primerCounter].value;
+        result += "<br>";
+    }
     document.write(result);
 
 });
