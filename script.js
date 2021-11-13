@@ -9,7 +9,7 @@ var maxSectionsPerPlate;
 var columns;
 var rows;
 var sampleNumber; //the number that appears in the table for pcr i.e. (1,1,2,2,3,3)
-var pcrPlateArray; //Holds the sample numbers
+var pcrPlateArray; //Holds the sample numbers/\
 
 
 //User inputted values
@@ -35,7 +35,7 @@ var result = "";
 //adds Primer Fields to input primer names
 //WIP: access primer names and use them in rest of document
 primerButton.addEventListener('click', function () {
-    var newP = document.createElement("p");
+    var newP = document.createElement("div");
 
     //loop to attach text input fields to paragraph element created above
     for (let y = 0; y < primersUI.value; y++) {
@@ -45,7 +45,7 @@ primerButton.addEventListener('click', function () {
         primerInputArray.push(textField); //adding textFields into an array to access their values
         newP.appendChild(textField);
         newP.appendChild(document.createElement("br"));
-        document.getElementById("firstP").appendChild(newP);
+        document.getElementById("firstDiv").appendChild(newP);
     }
     primerButton.remove();
 });
@@ -93,23 +93,25 @@ function initializeTwoDimensionalArray() {
     sampleNumber = 1;
     pcrPlateArray = new Array(columns);
 
-    // Loop to add array of size rows to each column
+    //Loop to add array of size rows to each column
     for (var u = 0; u < pcrPlateArray.length; u++) {
         pcrPlateArray[u] = new Array(rows);
     }
 
-    var countPCR = 0;
-
-    // Loop to initialize 2D array elements.
+    var countPCR = 0; //FIXME: Poor variable naming
+    //Loop to put sampleNumbers into 2D array.
     for (var i = 1; i <= rows; i++) {
         for (var j = 1; j <= columns; j++) {
             pcrPlateArray[i][j] = sampleNumber;
 
+            //FIXME: Likely an issue with this modulo logic for sampleNumber bug
+            //Checks if current column # is evenly divisible by duplicatesUI
             if (j % duplicatesUI.value === 0) {
-                sampleNumber++;
+                sampleNumber++; //if it is evenly divisible, move on to next number
+                //check if current sampleNumber is bigger than what user input for # of total samples
                 if (sampleNumber > samplesUI.value) {
-                    sampleNumber = 1;
-                    countPCR++;
+                    sampleNumber = 1; //if it is, reset to one
+                    countPCR++; 
                 }
 
                 if (countPCR >= primersUI.value || countPCR >= maxSectionsPerPlate) {
@@ -123,6 +125,7 @@ function initializeTwoDimensionalArray() {
 
 //== BUTTON == "calculate"
 calculate.addEventListener('click', function () {
+    //make sure user input can fit on chosen plate size
     if ((samplesUI.value * duplicatesUI.value) <= plateSize.value) {
         //determine dimensions of tables based on chosen Plate Size
         let crArray = detDimensions();
@@ -145,16 +148,18 @@ calculate.addEventListener('click', function () {
 
             //Loop to put elements in a table
             //FIXME: Change random color to a color palette
-            result += "<table border=1>";
+            result += "<table>";
             for (var l = 1; l <= rows; l++) {
                 result += "<tr>";
                 for (var k = 1; k <= columns; k++) {
                     let isBlack = false;
                     if (pcrPlateArray[l][k] == 0) {
                         isBlack = true;
+                        //pcrPlateArray[l][k] = ""; set '0' cells as empty
                     } else if (pcrPlateArray[l][k] === 1 && prev !== 1 && prev !== -1) {
                         color = '#' + Math.floor(Math.random() * 16777215).toString(16);
                         colorPrimerArray.push(color);
+                        console.log(k + ": " + colorPrimerArray.length);
                     }
                     prev = pcrPlateArray[l][k];
                     result += "<td style = 'background-color: " + (isBlack ? "#000000" : color) + "'>" + pcrPlateArray[l][k] + "</td>";
@@ -166,7 +171,7 @@ calculate.addEventListener('click', function () {
 
         //writing out list of color
         //result += "<p>";
-        result += "<table border = 1>";
+        result += "<table>";
         result += "<tr>";
         for (const c of colorPrimerArray) { //FIXME: colorPrimerArray is only storing one color at this point...
             result += "primer: <td style = 'background-color: " + c + "'>" + " HELLO! </td>"; //FIXME: replace HELLO! w/ primer name
