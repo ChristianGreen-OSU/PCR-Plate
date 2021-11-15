@@ -10,6 +10,7 @@ var columns;
 var rows;
 var sampleNumber; //the number that appears in the table for pcr i.e. (1,1,2,2,3,3)
 var pcrPlateArray; //Holds the sample numbers/\
+var xPlus1 = 0;
 
 
 //User inputted values
@@ -21,7 +22,7 @@ var primerButton = document.getElementById('primerStrings');
 
 //UI Gathering
 var calculate = document.getElementById('calculate');
-const storage = document.getElementById("storage");
+
 
 //Color Chooser
 let color = '#' + Math.floor(Math.random() * 16777215).toString(16); //random color generator
@@ -80,7 +81,14 @@ function calculateValues() {
     maxSectionsPerPlate = Math.floor(plateSize.value / wellsPerSection);
 }
 //Prints values calculated above at the top of 2nd page 
-function printCalculatedValues() {
+function printCalculatedValues(calcValuesDiv) {
+    /*let calcValuesPar = document.createElement("P");
+    calcValuesPar.textField = (numPlatesRound + " plate(s), " +
+        wellsNeeded + " wells needed, " +
+        wellsPerSection + " wells per section, " +
+        maxSectionsPerPlate + " section(s) per plate maximum. ");
+    calcValuesDiv.appendChild(calcValuesPar);*/
+
     document.write(numPlatesRound + " plate(s), " +
         wellsNeeded + " wells needed, " +
         wellsPerSection + " wells per section, " +
@@ -136,27 +144,27 @@ calculate.addEventListener('click', function () {
 
         calculateValues();
         //1 line sentence letting you know all calculated values.
-        printCalculatedValues();
+        var calcValuesDiv = document.createElement("div");
+        printCalculatedValues(calcValuesDiv);
 
         //FIXME: VAGUE VARIABLE NAMES
         //FIXME: BREAK INTO DISTINCT FUNCTIONS    
-        //
-        for (x = 0; x < numPlatesRound; x++) {
+        //Description of for loop
+        for (let x = 1; x <= numPlatesRound; x++) {
             initializeTwoDimensionalArray();
-            xPlus1 = x + 1;
-            result += "Creating PCR Table " + xPlus1 + "<br>";
+            result += "Creating PCR Table " + x + "<br>";
 
             //Loop to put elements in a table
             //FIXME: Change random color to a color palette
             result += "<table>";
-            for (var l = 1; l <= rows; l++) {
+            for (let l = 1; l <= rows; l++) {
                 result += "<tr>";
-                for (var k = 1; k <= columns; k++) {
+                for (let k = 1; k <= columns; k++) {
                     let isBlack = false;
                     if (pcrPlateArray[l][k] == 0) {
                         isBlack = true;
                         //pcrPlateArray[l][k] = ""; set '0' cells as empty
-                    } else if (pcrPlateArray[l][k] === 1 && prev !== 1 && prev !== -1) {
+                    } else if ((pcrPlateArray[l][k] === 1 && prev !== 1 && prev !== -1) || l === 1 && k === 1) {
                         color = '#' + Math.floor(Math.random() * 16777215).toString(16);
                         colorPrimerArray.push(color);
                         console.log(k + ": " + colorPrimerArray.length);
@@ -171,23 +179,17 @@ calculate.addEventListener('click', function () {
 
         //writing out list of color
         //result += "<p>";
+        result += "<br>";
         result += "<table>";
         result += "<tr>";
-        for (const c of colorPrimerArray) { //FIXME: colorPrimerArray is only storing one color at this point...
-            result += "primer: <td style = 'background-color: " + c + "'>" + " HELLO! </td>"; //FIXME: replace HELLO! w/ primer name
-            result += "<br>";
+        console.log(colorPrimerArray);
+        for (let w = 0; w < colorPrimerArray.length; w++) { 
+            result += "<td style = 'background-color: " + colorPrimerArray[w] + "'>" + primerInputArray[w].value + "</td>";
         }
+        
         //result += "</p>";
         result += "</tr>";
         result += "</table>";
-        document.write(result);
-
-        //primerInputArray.foreach(element => result += element); Tried to use foreach to no avail
-        //Loop to add primer names to bottom of page
-        for (let primerCounter = 0; primerCounter < primerInputArray.length; primerCounter++) {
-            result += primerInputArray[primerCounter].value;
-            result += "<br>";
-        }
         document.write(result);
     } else {
         alert("The multiple of samples and duplicates has to be less than or equal to the plate size!");
