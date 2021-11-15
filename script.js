@@ -36,7 +36,7 @@ var result = "";
 //adds Primer Fields to input primer names
 //WIP: access primer names and use them in rest of document
 primerButton.addEventListener('click', function () {
-    var newP = document.createElement("div");
+    var newD = document.createElement("div");
 
     //loop to attach text input fields to paragraph element created above
     for (let y = 0; y < primersUI.value; y++) {
@@ -44,9 +44,9 @@ primerButton.addEventListener('click', function () {
         textField.type = "text";
         textField.placeholder = "Primer Name";
         primerInputArray.push(textField); //adding textFields into an array to access their values
-        newP.appendChild(textField);
-        newP.appendChild(document.createElement("br"));
-        document.getElementById("firstDiv").appendChild(newP);
+        newD.appendChild(textField);
+        newD.appendChild(document.createElement("br"));
+        document.getElementById("firstDiv").appendChild(newD);
     }
     primerButton.remove();
 });
@@ -82,11 +82,13 @@ function calculateValues() {
 }
 //Prints values calculated above at the top of 2nd page 
 function printCalculatedValues(calcValuesDiv) {
+
     /*let calcValuesPar = document.createElement("P");
-    calcValuesPar.textField = (numPlatesRound + " plate(s), " +
+    calcValuesPar.textContent = (numPlatesRound + " plate(s), " +
         wellsNeeded + " wells needed, " +
         wellsPerSection + " wells per section, " +
-        maxSectionsPerPlate + " section(s) per plate maximum. ");
+        maxSectionsPerPlate + " section(s) per plate maximum. "
+    );
     calcValuesDiv.appendChild(calcValuesPar);*/
 
     document.write(numPlatesRound + " plate(s), " +
@@ -119,7 +121,7 @@ function initializeTwoDimensionalArray() {
                 //check if current sampleNumber is bigger than what user input for # of total samples
                 if (sampleNumber > samplesUI.value) {
                     sampleNumber = 1; //if it is, reset to one
-                    countPCR++; 
+                    countPCR++;
                 }
 
                 if (countPCR >= primersUI.value || countPCR >= maxSectionsPerPlate) {
@@ -183,10 +185,10 @@ calculate.addEventListener('click', function () {
         result += "<table>";
         result += "<tr>";
         console.log(colorPrimerArray);
-        for (let w = 0; w < colorPrimerArray.length; w++) { 
+        for (let w = 0; w < colorPrimerArray.length; w++) {
             result += "<td style = 'background-color: " + colorPrimerArray[w] + "'>" + primerInputArray[w].value + "</td>";
         }
-        
+
         //result += "</p>";
         result += "</tr>";
         result += "</table>";
