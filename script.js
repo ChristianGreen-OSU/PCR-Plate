@@ -19,6 +19,7 @@ var samplesUI = document.getElementById('samples');
 var duplicatesUI = document.getElementById('duplicates');
 var plateSize = document.getElementById('plateSize');
 var primerButton = document.getElementById('primerStrings');
+var sampleButton = document.getElementById('sampleStrings');
 
 //UI Gathering
 var calculate = document.getElementById('calculate');
@@ -30,6 +31,7 @@ let prev = -1;
 let primerIteration = 0;
 let colorPrimerArray = [];
 let primerInputArray = [];
+let sampleInputArray = [];
 var result = "";
 
 //== BUTTON ==
@@ -50,6 +52,25 @@ primerButton.addEventListener('click', function () {
     }
     primerButton.remove();
 });
+
+//== BUTTON == 
+//adds Sample Fields to input names
+sampleButton.addEventListener('click', function () {
+    var newD = document.createElement("div");
+
+    //loop to attach text input fields to paragraph element created above
+    for (let y = 0; y < samplesUI.value; y++) {
+        var textField = document.createElement("input");
+        textField.type = "text";
+        textField.placeholder = "Sample Name";
+        sampleInputArray.push(textField); //adding textFields into an array to access their values
+        newD.appendChild(textField);
+        newD.appendChild(document.createElement("br"));
+        document.getElementById("secondDiv").appendChild(newD);
+    }
+    sampleButton.remove();
+});
+
 
 //== FUNCTIONS ==
 //function called within calculate button function to 
@@ -83,20 +104,13 @@ function calculateValues() {
 //Prints values calculated above at the top of 2nd page 
 function printCalculatedValues(calcValuesDiv) {
 
-    /*let calcValuesPar = document.createElement("P");
+    let calcValuesPar = document.createElement("P");
     calcValuesPar.textContent = (numPlatesRound + " plate(s), " +
         wellsNeeded + " wells needed, " +
         wellsPerSection + " wells per section, " +
         maxSectionsPerPlate + " section(s) per plate maximum. "
     );
-    calcValuesDiv.appendChild(calcValuesPar);*/
-
-    document.write(numPlatesRound + " plate(s), " +
-        wellsNeeded + " wells needed, " +
-        wellsPerSection + " wells per section, " +
-        maxSectionsPerPlate + " section(s) per plate maximum. "
-    );
-    document.write("<br><br>");
+    calcValuesDiv.appendChild(calcValuesPar);
 }
 //Initializes the two dimensional array
 function initializeTwoDimensionalArray() {
@@ -133,8 +147,19 @@ function initializeTwoDimensionalArray() {
     }
 }
 
+function newPage() {
+    document.body.innerHTML = '';
+}
+
 //== BUTTON == "calculate"
 calculate.addEventListener('click', function () {
+    let secondDiv = document.getElementById("tables");
+    secondDiv.innerHTML = "";
+    var calcValuesDiv = document.getElementById("Calculated Values Output");
+    calcValuesDiv.innerHTML = "";
+    let legendDiv = document.getElementById("legend");
+    legendDiv.innerHTML = "";
+
     //make sure user input can fit on chosen plate size
     if ((samplesUI.value * duplicatesUI.value) <= plateSize.value) {
         //determine dimensions of tables based on chosen Plate Size
@@ -146,21 +171,23 @@ calculate.addEventListener('click', function () {
 
         calculateValues();
         //1 line sentence letting you know all calculated values.
-        var calcValuesDiv = document.createElement("div");
         printCalculatedValues(calcValuesDiv);
+        //newPage();
 
         //FIXME: VAGUE VARIABLE NAMES
         //FIXME: BREAK INTO DISTINCT FUNCTIONS    
         //Description of for loop
         for (let x = 1; x <= numPlatesRound; x++) {
             initializeTwoDimensionalArray();
-            result += "Creating PCR Table " + x + "<br>";
+            let pcrTableTag = document.createElement("p");
+            pcrTableTag.textContent = "Creating PCR Table " + x;
+            secondDiv.appendChild(pcrTableTag);
 
             //Loop to put elements in a table
             //FIXME: Change random color to a color palette
-            result += "<table>";
+            let pcrTable = document.createElement("table");
             for (let l = 1; l <= rows; l++) {
-                result += "<tr>";
+                let tr = pcrTable.insertRow();
                 for (let k = 1; k <= columns; k++) {
                     let isBlack = false;
                     if (pcrPlateArray[l][k] == 0) {
@@ -172,27 +199,28 @@ calculate.addEventListener('click', function () {
                         console.log(k + ": " + colorPrimerArray.length);
                     }
                     prev = pcrPlateArray[l][k];
-                    result += "<td style = 'background-color: " + (isBlack ? "#000000" : color) + "'>" + pcrPlateArray[l][k] + "</td>";
+                    let td = tr.insertCell();
+                    td.style.backgroundColor = (isBlack ? "#000000" : color);
+                    td.textContent = pcrPlateArray[l][k];
+                    //result += "<td style = 'background-color: " + (isBlack ? "#000000" : color) + "'>" + pcrPlateArray[l][k] + "</td>";
                 }
-                result += "</tr>";
             }
-            result += "</table>";
+            pcrTableTag.appendChild(pcrTable);
         }
 
         //writing out list of color
         //result += "<p>";
-        result += "<br>";
-        result += "<table>";
-        result += "<tr>";
+        let legendTable = document.createElement("table");
         console.log(colorPrimerArray);
         for (let w = 0; w < colorPrimerArray.length; w++) {
-            result += "<td style = 'background-color: " + colorPrimerArray[w] + "'>" + primerInputArray[w].value + "</td>";
+            let tr = legendTable.insertRow();
+            let td = tr.insertCell();
+            td.style.backgroundColor = (colorPrimerArray[w]);
+            td.textContent = primerInputArray[w].value;
+            //result += "<td style = 'background-color: " + colorPrimerArray[w] + "'>" + primerInputArray[w].value + "</td>";
         }
+        legendDiv.appendChild(legendTable);
 
-        //result += "</p>";
-        result += "</tr>";
-        result += "</table>";
-        document.write(result);
     } else {
         alert("The multiple of samples and duplicates has to be less than or equal to the plate size!");
         location.reload();

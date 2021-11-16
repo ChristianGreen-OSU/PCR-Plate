@@ -1,8 +1,16 @@
-table, td, tr {
+table, tr {
     width: 100%;
     border: 1px solid black;
-    /*border-collapse: collapse;*/
+    border-collapse: collapse;
+    display: flex;
+  }
+  td {
+      flex-grow: 1;
   }
 body {
     background-color: lightblue;
+}
+
+tbody {
+    width: 100%;
 }

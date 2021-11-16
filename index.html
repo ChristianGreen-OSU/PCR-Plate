@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,20 +8,32 @@
     <link href="style.css" type="text/css" rel="stylesheet">
     <title>PCR Plate Calculator</title>
 </head>
+
 <body>
-    <input type = "number" id = "primers" placeholder = "# of Primers"></input> 
-    <div id="firstDiv"> </div>
-    <button id = "primerStrings"> + </button> <br>
-    <input type = "number" id = "samples" placeholder = "# of Samples"></input> <br>
-    <input type = "number" id = "duplicates" placeholder = "# of Duplicates"></input> <br>
-    <select name="plateSize" id="plateSize">
-        <option value="24">24</option>
-        <option value="48">48</option>
-        <option value="96">96</option>
-        <option value="384">384</option>
-    </select>
-    <br>
-    <button id = 'calculate'> Calculate! </button>
-    <script src = "script.js"> </script>
+    <div id = "userinput">
+        <input type="number" id="primers" placeholder="# of Primers"></input>
+        <div id="firstDiv"> </div>
+        <button id="primerStrings"> + </button> <br>
+        <input type="number" id="samples" placeholder="# of Samples"></input> <br>
+        <div id="secondDiv"> </div>
+        <button id = "sampleStrings"> + </button> <br>
+        <input type="number" id="duplicates" placeholder="# of Duplicates"></input> <br>
+        <select name="plateSize" id="plateSize">
+            <option value="24">24</option>
+            <option value="48">48</option>
+            <option value="96">96</option>
+            <option value="384">384</option>
+        </select>
+        <br>
+        <button id='calculate'> Calculate! </button>
+        <script src="script.js"> </script>
+    </div>
+    <div id = "Calculated Values Output">
+    </div>
+    <div id = "tables">
+    </div>
+    <div id = "legend">
+    </div>
 </body>
+
 </html>
