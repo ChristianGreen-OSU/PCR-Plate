@@ -32,7 +32,7 @@ let primerIteration = 0;
 let colorPrimerArray = [];
 let primerInputArray = [];
 let sampleInputArray = [];
-var result = "";
+var colorPaletteArray = ["#0099BC", "#00CC6A", "#8E8CD8", "#00B7C3", "#FFB900", "#0078D7", "#FF8C00", "#00B294"];
 
 //== BUTTON ==
 //adds Primer Fields to input primer names
@@ -147,8 +147,8 @@ function initializeTwoDimensionalArray() {
     }
 }
 
-function newPage() {
-    document.body.innerHTML = '';
+function tableCreation() {
+    
 }
 
 //== BUTTON == "calculate"
@@ -172,7 +172,6 @@ calculate.addEventListener('click', function () {
         calculateValues();
         //1 line sentence letting you know all calculated values.
         printCalculatedValues(calcValuesDiv);
-        //newPage();
 
         //FIXME: VAGUE VARIABLE NAMES
         //FIXME: BREAK INTO DISTINCT FUNCTIONS    
@@ -180,11 +179,12 @@ calculate.addEventListener('click', function () {
         for (let x = 1; x <= numPlatesRound; x++) {
             initializeTwoDimensionalArray();
             let pcrTableTag = document.createElement("p");
-            pcrTableTag.textContent = "Creating PCR Table " + x;
+            pcrTableTag.textContent = "Creating PCR Table #" + x;
             secondDiv.appendChild(pcrTableTag);
 
-            //Loop to put elements in a table
+            //Loop to put elements from pcrPlateArray in a table and add color to table
             //FIXME: Change random color to a color palette
+            let colorPalette = 0;
             let pcrTable = document.createElement("table");
             for (let l = 1; l <= rows; l++) {
                 let tr = pcrTable.insertRow();
@@ -192,33 +192,38 @@ calculate.addEventListener('click', function () {
                     let isBlack = false;
                     if (pcrPlateArray[l][k] == 0) {
                         isBlack = true;
-                        //pcrPlateArray[l][k] = ""; set '0' cells as empty
+                        //pcrPlateArray[l][k] = ""; //set '0' cells as empty
                     } else if ((pcrPlateArray[l][k] === 1 && prev !== 1 && prev !== -1) || l === 1 && k === 1) {
-                        color = '#' + Math.floor(Math.random() * 16777215).toString(16);
+                        //color = '#' + Math.floor(Math.random() * 16777215).toString(16);
+                        color = colorPaletteArray[colorPalette];
+                        console.log(color);
                         colorPrimerArray.push(color);
                         console.log(k + ": " + colorPrimerArray.length);
+                        colorPalette++;
                     }
                     prev = pcrPlateArray[l][k];
                     let td = tr.insertCell();
                     td.style.backgroundColor = (isBlack ? "#000000" : color);
                     td.textContent = pcrPlateArray[l][k];
-                    //result += "<td style = 'background-color: " + (isBlack ? "#000000" : color) + "'>" + pcrPlateArray[l][k] + "</td>";
                 }
             }
             pcrTableTag.appendChild(pcrTable);
         }
 
         //writing out list of color
-        //result += "<p>";
         let legendTable = document.createElement("table");
+        let legendTitle = document.createElement("p");
+        legendTitle.textContent = "Primers:";
         console.log(colorPrimerArray);
+        let tr = legendTable.insertRow();
         for (let w = 0; w < colorPrimerArray.length; w++) {
-            let tr = legendTable.insertRow();
             let td = tr.insertCell();
-            td.style.backgroundColor = (colorPrimerArray[w]);
+            //td.style.backgroundColor = (colorPrimerArray[w]);
+            td.style.backgroundColor = (colorPaletteArray[w]);
+            console.log(colorPaletteArray[w]);
             td.textContent = primerInputArray[w].value;
-            //result += "<td style = 'background-color: " + colorPrimerArray[w] + "'>" + primerInputArray[w].value + "</td>";
         }
+        legendDiv.appendChild(legendTitle);
         legendDiv.appendChild(legendTable);
 
     } else {
