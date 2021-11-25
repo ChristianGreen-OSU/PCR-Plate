@@ -6,18 +6,27 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="style.css" type="text/css" rel="stylesheet">
+    <link rel="shortcut icon" href="https://cdn.sstatic.net/Sites/stackoverflow/Img/favicon.ico?v=ec617d715196">
     <title>PCR Plate Calculator</title>
 </head>
 
 <body>
+    <h1>PCR Plate Calculator</h1>
+    <p>Input desired characteristics of your test below!</p>
     <div id="userinput">
         <div class="form-outline"></div>
-            <input type="number" id="primers" class="simple-input" placeholder="# of Primers"></input>
-            <div id="firstDiv"> </div>
-            <button id="primerStrings" class="flex"> + </button> <br>
+            <label for="primers">Enter # of Primers:</label>
+            <input type="number" id="primers" class="simple-input" placeholder="# of Primers">
+                <button id="primerStrings" class="flex"> + </button>
+                <div id="firstDiv"> </div> 
+                <br>
+            </input>
+            
+            <label for="samples">Enter # of Samples:</label>
             <input type="number" id="samples" class="simple-input" placeholder="# of Samples"></input>
             <div id="secondDiv"> </div>
-            <button id="sampleStrings"> + </button> <br>
+            <button id="sampleStrings" style="margin-left:305px"> + </button> 
+            <br>
             <input type="number" id="duplicates" class="simple-input" placeholder="# of Duplicates"></input> <br>
             <select name="plateSize" id="plateSize">
                 <option value="24">24</option>

@@ -118,19 +118,23 @@ function initializeTwoDimensionalArray() {
     pcrPlateArray = new Array(columns);
 
     //Loop to add array of size rows to each column
-    for (var u = 0; u < pcrPlateArray.length; u++) {
+    for (let u = 0; u < pcrPlateArray.length; u++) {
         pcrPlateArray[u] = new Array(rows);
     }
 
     var countPCR = 0; //FIXME: Poor variable naming
     //Loop to put sampleNumbers into 2D array.
-    for (var i = 1; i <= rows; i++) {
+    for (let i = 1; i <= rows; i++) {
         for (var j = 1; j <= columns; j++) {
             pcrPlateArray[i][j] = sampleNumber;
 
             //FIXME: Likely an issue with this modulo logic for sampleNumber bug
             //Checks if current column # is evenly divisible by duplicatesUI
-            if (j % duplicatesUI.value === 0) {
+            console.log("Sample Number: " + sampleNumber);
+            console.log("j: " + j);
+            console.log("duplicatesUI.value: " + duplicatesUI.value);
+            console.log(j % duplicatesUI.value);
+            if (j % duplicatesUI.value === 0) { 
                 sampleNumber++; //if it is evenly divisible, move on to next number
                 //check if current sampleNumber is bigger than what user input for # of total samples
                 if (sampleNumber > samplesUI.value) {
