@@ -9,7 +9,6 @@ var maxSectionsPerPlate;
 var columns;
 var rows;
 var sampleNumber; //the number that appears in the table for pcr i.e. (1,1,2,2,3,3)
-var xPlus1 = 0;
 
 //stops default form refresh. Allows page to be built after hitting 'Calculate!' button
 $("#userinput").submit(function(e) {
@@ -18,21 +17,16 @@ $("#userinput").submit(function(e) {
 });
 
 //User inputted values
-var primersUI = document.getElementById('primers');
-var samplesUI = document.getElementById('samples');
-var duplicatesUI = document.getElementById('duplicates');
-var plateSize = document.getElementById('plateSize');
-var primerButton = document.getElementById('primerStrings');
+//var primersUI = $('#primers').val(); var samplesUI = $('#samples').val(); var duplicatesUI = document.getElementById('duplicates'); var plateSize = document.getElementById('plateSize'); var primerButton = document.getElementById('primerStrings');
 var sampleButton = document.getElementById('sampleStrings');
 
 //UI Gathering
 var calculate = document.getElementById('calculate');
 
-
 //Color Chooser
+//The number 16,777,215 is the total possible combinations of RGB(255,255,255) which is 32 bit colour
 let color = '#' + Math.floor(Math.random() * 16777215).toString(16); //random color generator
 let prev = -1;
-let primerIteration = 0;
 let colorPrimerArray = [];
 let primerInputArray = [];
 let sampleInputArray = [];
@@ -40,11 +34,11 @@ var colorPaletteArray = ["#0099BC", "#00CC6A", "#8E8CD8", "#00B7C3", "#FFB900", 
 
 //== BUTTON ==
 //adds Primer Fields to input primer names
-primerButton.addEventListener('click', function () {
+$("#primerStrings").click(function(){
     let newD = document.createElement("div");
 
     //loop to attach text input fields to paragraph element created above
-    for (let y = 0; y < primersUI.value; y++) {
+    for (let y = 0; y < $('#primers').val(); y++) {
         let textField = document.createElement("input");
         textField.type = "text";
         textField.placeholder = "Primer Name";
@@ -53,17 +47,17 @@ primerButton.addEventListener('click', function () {
         newD.appendChild(document.createElement("br"));
         document.getElementById("firstDiv").appendChild(newD);
     }
-    primerButton.remove();
+    $("#primerStrings").remove();
 });
 
 //== BUTTON == 
 //adds Sample Fields to input names
 //WIP: access sample names and use them in rest of document
-sampleButton.addEventListener('click', function () {
+$('#sampleStrings').click(function() {
     let newDiv = document.createElement("div");
 
     //loop to attach text input fields to paragraph element created above
-    for (let y = 0; y < samplesUI.value; y++) {
+    for (let y = 0; y < $('#samples').val(); y++) {
         let textField = document.createElement("input");
         textField.type = "text";
         textField.placeholder = "Sample Name";
@@ -72,7 +66,7 @@ sampleButton.addEventListener('click', function () {
         newDiv.appendChild(document.createElement("br"));
         document.getElementById("secondDiv").appendChild(newDiv);
     }
-    sampleButton.remove();
+    $('#sampleStrings').remove();
 });
 
 
@@ -81,16 +75,16 @@ sampleButton.addEventListener('click', function () {
 //determine the dimensions of the plate after size is chosen
 function detDimensions() {
 
-    if (plateSize.value == "24") {
+    if ($('#plateSize').val() == "24") {
         columns = 8;
         rows = 3;
-    } else if (plateSize.value == "48") {
+    } else if ($('#plateSize').val() == "48") {
         columns = 8;
         rows = 6;
-    } else if (plateSize.value == "96") {
+    } else if ($('#plateSize').val() == "96") {
         columns = 12;
         rows = 8;
-    } else if (plateSize.value == "384") {
+    } else if ($('#plateSize').val() == "384") {
         columns = 24;
         rows = 16;
     }
@@ -99,13 +93,13 @@ function detDimensions() {
 }
 //Calculates numPlates, numPlatesRound, wellsNeeded, wellsPerSection, and maxSectionsPerPlate
 function calculateValues() {
-    numPlates = (primersUI.value * samplesUI.value * duplicatesUI.value) / plateSize.value;
+    numPlates = ($('#primers').val() * $('#samples').val() * $('#duplicates').val()) / $('#plateSize').val();
     numPlatesRound = Math.ceil(numPlates); //Rounds the number of plates needed up to the next highest int
-    wellsNeeded = primersUI.value * samplesUI.value * duplicatesUI.value;
-    wellsPerSection = samplesUI.value * duplicatesUI.value;
-    maxSectionsPerPlate = Math.floor(plateSize.value / wellsPerSection);
+    wellsNeeded = $('#primers').val() * $('#samples').val() * $('#duplicates').val();
+    wellsPerSection = $('#samples').val() * $('#duplicates').val();
+    maxSectionsPerPlate = Math.floor($('#plateSize').val() / wellsPerSection);
 }
-//Prints values calculated above at the top of 2nd page 
+//Prints values calculated above at the top of 2nd half of page 
 function printCalculatedValues(calcValuesDiv) {
 
     let calcValuesPar = document.createElement("P");
@@ -137,17 +131,17 @@ function initializeTwoDimensionalArray() {
             console.log("New section");
             console.log("Sample Number: " + sampleNumber);
             console.log("j: " + j);
-            console.log("duplicatesUI.value: " + duplicatesUI.value);
-            console.log("j % duplicatesUI.value: " + j % duplicatesUI.value);
-            if (j % duplicatesUI.value === 0) { 
+            console.log("$('#duplicates').val(): " + $('#duplicates').val());
+            console.log("j % $('#duplicates').val(): " + j % $('#duplicates').val());
+            if (j % $('#duplicates').val() === 0) { 
                 sampleNumber++; //if it is evenly divisible, move on to next number
                 //check if current sampleNumber is bigger than what user input for # of total samples
-                if (sampleNumber > samplesUI.value) {
+                if (sampleNumber > $('#samples').val()) {
                     sampleNumber = 1; //if it is, reset to one
                     countPCR++;
                 }
 
-                if (countPCR >= primersUI.value || countPCR >= maxSectionsPerPlate) {
+                if (countPCR >= $('#primers').val() || countPCR >= maxSectionsPerPlate) {
                     sampleNumber = 0;
                 }
 
@@ -162,7 +156,7 @@ function tableCreation() {
 }
 
 //== BUTTON == "calculate"
-calculate.addEventListener('click', function () {
+$('#calculate').click(function() {
     let secondDiv = document.getElementById("tables");
     secondDiv.innerHTML = "";
     var calcValuesDiv = document.getElementById("Calculated Values Output");
@@ -171,13 +165,13 @@ calculate.addEventListener('click', function () {
     legendDiv.innerHTML = "";
 
     //make sure user input can fit on chosen plate size
-    if ((samplesUI.value * duplicatesUI.value) <= plateSize.value) {
+    if (($('#samples').val() * $('#duplicates').val()) <= $('#plateSize').val()) {
         //determine dimensions of tables based on chosen Plate Size
         let crArray = detDimensions();
         let columns = crArray[0];
         let rows = crArray[1];
-        console.log(" columns:" + columns + " rows:" + rows + " plateSize:" + plateSize.value);
-        console.log(primersUI.value + " primers, " + samplesUI.value + " samples, " + duplicatesUI.value + " duplicates");
+        console.log(" columns:" + columns + " rows:" + rows + " plateSize:" + $('#plateSize').val());
+        console.log($('#primers').val() + " primers, " + $('#samples').val() + " samples, " + $('#duplicates').val() + " duplicates");
 
         calculateValues();
         //1 line sentence letting you know all calculated values.
