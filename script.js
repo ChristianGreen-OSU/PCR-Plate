@@ -9,9 +9,13 @@ var maxSectionsPerPlate;
 var columns;
 var rows;
 var sampleNumber; //the number that appears in the table for pcr i.e. (1,1,2,2,3,3)
-var pcrPlateArray; //Holds the sample numbers/\
 var xPlus1 = 0;
 
+//stops default form refresh. Allows page to be built after hitting 'Calculate!' button
+$("#userinput").submit(function(e) {
+    e.preventDefault();
+    console.log("jQuery success!");
+});
 
 //User inputted values
 var primersUI = document.getElementById('primers');
@@ -36,13 +40,12 @@ var colorPaletteArray = ["#0099BC", "#00CC6A", "#8E8CD8", "#00B7C3", "#FFB900", 
 
 //== BUTTON ==
 //adds Primer Fields to input primer names
-//WIP: access primer names and use them in rest of document
 primerButton.addEventListener('click', function () {
-    var newD = document.createElement("div");
+    let newD = document.createElement("div");
 
     //loop to attach text input fields to paragraph element created above
     for (let y = 0; y < primersUI.value; y++) {
-        var textField = document.createElement("input");
+        let textField = document.createElement("input");
         textField.type = "text";
         textField.placeholder = "Primer Name";
         primerInputArray.push(textField); //adding textFields into an array to access their values
@@ -55,18 +58,19 @@ primerButton.addEventListener('click', function () {
 
 //== BUTTON == 
 //adds Sample Fields to input names
+//WIP: access sample names and use them in rest of document
 sampleButton.addEventListener('click', function () {
-    var newD = document.createElement("div");
+    let newDiv = document.createElement("div");
 
     //loop to attach text input fields to paragraph element created above
     for (let y = 0; y < samplesUI.value; y++) {
-        var textField = document.createElement("input");
+        let textField = document.createElement("input");
         textField.type = "text";
         textField.placeholder = "Sample Name";
         sampleInputArray.push(textField); //adding textFields into an array to access their values
-        newD.appendChild(textField);
-        newD.appendChild(document.createElement("br"));
-        document.getElementById("secondDiv").appendChild(newD);
+        newDiv.appendChild(textField);
+        newDiv.appendChild(document.createElement("br"));
+        document.getElementById("secondDiv").appendChild(newDiv);
     }
     sampleButton.remove();
 });
@@ -115,7 +119,7 @@ function printCalculatedValues(calcValuesDiv) {
 //Initializes the two dimensional array
 function initializeTwoDimensionalArray() {
     sampleNumber = 1;
-    pcrPlateArray = new Array(columns);
+    let pcrPlateArray = new Array(columns);
 
     //Loop to add array of size rows to each column
     for (let u = 0; u < pcrPlateArray.length; u++) {
@@ -130,10 +134,11 @@ function initializeTwoDimensionalArray() {
 
             //FIXME: Likely an issue with this modulo logic for sampleNumber bug
             //Checks if current column # is evenly divisible by duplicatesUI
+            console.log("New section");
             console.log("Sample Number: " + sampleNumber);
             console.log("j: " + j);
             console.log("duplicatesUI.value: " + duplicatesUI.value);
-            console.log(j % duplicatesUI.value);
+            console.log("j % duplicatesUI.value: " + j % duplicatesUI.value);
             if (j % duplicatesUI.value === 0) { 
                 sampleNumber++; //if it is evenly divisible, move on to next number
                 //check if current sampleNumber is bigger than what user input for # of total samples
@@ -149,6 +154,7 @@ function initializeTwoDimensionalArray() {
             }
         }
     }
+    return pcrPlateArray;
 }
 
 function tableCreation() {
@@ -181,13 +187,12 @@ calculate.addEventListener('click', function () {
         //FIXME: BREAK INTO DISTINCT FUNCTIONS    
         //Description of for loop
         for (let x = 1; x <= numPlatesRound; x++) {
-            initializeTwoDimensionalArray();
+            let pcrPlateArray = initializeTwoDimensionalArray();
             let pcrTableTag = document.createElement("p");
             pcrTableTag.textContent = "Creating PCR Table #" + x;
             secondDiv.appendChild(pcrTableTag);
 
-            //Loop to put elements from pcrPlateArray in a table and add color to table
-            //FIXME: Change random color to a color palette
+            //Loop to put elements from pcrPlateArray in a UX table and add color to table
             let colorPalette = 0;
             let pcrTable = document.createElement("table");
             for (let l = 1; l <= rows; l++) {
@@ -222,7 +227,6 @@ calculate.addEventListener('click', function () {
         let tr = legendTable.insertRow();
         for (let w = 0; w < colorPrimerArray.length; w++) {
             let td = tr.insertCell();
-            //td.style.backgroundColor = (colorPrimerArray[w]);
             td.style.backgroundColor = (colorPaletteArray[w]);
             console.log(colorPaletteArray[w]);
             td.textContent = primerInputArray[w].value;
@@ -231,6 +235,9 @@ calculate.addEventListener('click', function () {
         legendDiv.appendChild(legendTable);
 
     } else {
+        //Error: The number of samples times duplicates provides the number of wells required for each primer. 
+        //Every plate must have at least two primers, one internal control, and one test sample. Please re-input data to match criteria.
+
         alert("The multiple of samples and duplicates has to be less than or equal to the plate size!");
         location.reload();
     }

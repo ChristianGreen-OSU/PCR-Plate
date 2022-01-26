@@ -7,13 +7,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="style.css" type="text/css" rel="stylesheet">
     <link rel="shortcut icon" href="https://cdn.sstatic.net/Sites/stackoverflow/Img/favicon.ico?v=ec617d715196">
+    <script src="script.js" defer> </script>
+    <script src="jquery-3.6.0.js"> </script>
     <title>PCR Plate Calculator</title>
 </head>
 
 <body>
     <h1>PCR Plate Calculator</h1>
     <p>Input desired characteristics of your test below!</p>
-    <div id="userinput">
+    <form id="userinput">
         <div class="form-outline"></div>
             <label for="primers">Enter # of Primers:</label>
             <input type="number" id="primers" class="simple-input" placeholder="# of Primers">
@@ -23,10 +25,13 @@
             </input>
             
             <label for="samples">Enter # of Samples:</label>
-            <input type="number" id="samples" class="simple-input" placeholder="# of Samples"></input>
-            <div id="secondDiv"> </div>
-            <button id="sampleStrings" style="margin-left:305px"> + </button> 
-            <br>
+            <input type="number" id="samples" class="simple-input" placeholder="# of Samples">
+                <button id="sampleStrings"> + </button> 
+                <div id="secondDiv"> </div>
+                <br>
+            </input>
+            
+            <label for="duplicates">Enter # of Duplicates</label>
             <input type="number" id="duplicates" class="simple-input" placeholder="# of Duplicates"></input> <br>
             <select name="plateSize" id="plateSize">
                 <option value="24">24</option>
@@ -37,8 +42,8 @@
             <br>
         </div>
         <button id='calculate'> Calculate! </button>
-        <script src="script.js"> </script>
-    </div>
+        
+    </form>
     <div id="Calculated Values Output">
     </div>
     <div id="tables">
