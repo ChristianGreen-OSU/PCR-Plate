@@ -8,7 +8,7 @@ var maxSectionsPerPlate;
 //Values for making table
 var columns;
 var rows;
-var sampleNumber; //the number that appears in the table for pcr i.e. (1,1,2,2,3,3)
+//var sampleNumber; //the number that appears in the table for pcr i.e. (1,1,2,2,3,3)
 
 //stops default form refresh. Allows page to be built after hitting 'Calculate!' button
 $("#userinput").submit(function(e) {
@@ -110,53 +110,60 @@ function printCalculatedValues(calcValuesDiv) {
     );
     calcValuesDiv.appendChild(calcValuesPar);
 }
-//Initializes the two dimensional array
-function initializeTwoDimensionalArray() {
-    sampleNumber = 1;
+//Creates and fills the two dimensional array
+function initialize2DArray() {
+    let sampleNumber = 1;
     let pcrPlateArray = new Array(columns);
 
     //Loop to add array of size rows to each column
     for (let u = 0; u < pcrPlateArray.length; u++) {
         pcrPlateArray[u] = new Array(rows);
     }
+    return pcrPlateArray;
+}
 
-    var countPCR = 0; //FIXME: Poor variable naming
+function createPCRPlateArray() {
+    let pcrPlateArray = initialize2DArray();
+    let countPCR = 0;
+    let duplicates = 1;
+    let sampleNumber = 1;
     //Loop to put sampleNumbers into 2D array.
-    for (let i = 1; i <= rows; i++) {
-        for (var j = 1; j <= columns; j++) {
-            pcrPlateArray[i][j] = sampleNumber;
-
-            //FIXME: Likely an issue with this modulo logic for sampleNumber bug
+    for (let r = 1; r <= rows; r++) {
+        for (let c = 1; c <= columns; c++) {
+            pcrPlateArray[r][c] = sampleNumber;
+            //FIXME: seems to recalculate number of duplicates by row
+            //e.g. 6 duplicates; 2 on first row, move onto next row; another 6 added because it restarts (8 total)
             //Checks if current column # is evenly divisible by duplicatesUI
-            console.log("New section");
-            console.log("Sample Number: " + sampleNumber);
-            console.log("j: " + j);
-            console.log("$('#duplicates').val(): " + $('#duplicates').val());
-            console.log("j % $('#duplicates').val(): " + j % $('#duplicates').val());
-            if (j % $('#duplicates').val() === 0) { 
+            function log() {
+                console.log("New section");
+                console.log("Sample Number: " + sampleNumber);
+                console.log("c: " + c);
+                console.log("$('#duplicates').val(): " + $('#duplicates').val());
+                console.log("c % $('#duplicates').val(): " + c % $('#duplicates').val());
+            } //log();
+            console.log(duplicates);
+            console.log(duplicates == $('#duplicates').val());
+            if ((duplicates == $('#duplicates').val())) { 
+                console.log(duplicates);
                 sampleNumber++; //if it is evenly divisible, move on to next number
+                duplicates = 0;
                 //check if current sampleNumber is bigger than what user input for # of total samples
                 if (sampleNumber > $('#samples').val()) {
                     sampleNumber = 1; //if it is, reset to one
                     countPCR++;
-                }
-
-                if (countPCR >= $('#primers').val() || countPCR >= maxSectionsPerPlate) {
+                }if (countPCR >= $('#primers').val() || countPCR >= maxSectionsPerPlate) {
                     sampleNumber = 0;
                 }
-
             }
+            duplicates++;   
         }
     }
     return pcrPlateArray;
 }
 
-function tableCreation() {
-    
-}
-
 //== BUTTON == "calculate"
 $('#calculate').click(function() {
+    //jQuery-ify
     let secondDiv = document.getElementById("tables");
     secondDiv.innerHTML = "";
     var calcValuesDiv = document.getElementById("Calculated Values Output");
@@ -181,7 +188,8 @@ $('#calculate').click(function() {
         //FIXME: BREAK INTO DISTINCT FUNCTIONS    
         //Description of for loop
         for (let x = 1; x <= numPlatesRound; x++) {
-            let pcrPlateArray = initializeTwoDimensionalArray();
+            //jQuery-ify
+            let pcrPlateArray = createPCRPlateArray();
             let pcrTableTag = document.createElement("p");
             pcrTableTag.textContent = "Creating PCR Table #" + x;
             secondDiv.appendChild(pcrTableTag);
