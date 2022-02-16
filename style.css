@@ -11,7 +11,7 @@ table, tr {
       flex-grow: 1;
   }
 body {
-    background-color: lightred;
+    background-color: rgb(224, 146, 146);
 }
 
 tbody {
