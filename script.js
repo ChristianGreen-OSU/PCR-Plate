@@ -8,7 +8,6 @@ var maxSectionsPerPlate;
 //Values for making table
 var columns;
 var rows;
-//var sampleNumber; //the number that appears in the table for pcr i.e. (1,1,2,2,3,3)
 
 //stops default form refresh. Allows page to be built after hitting 'Calculate!' button
 $("#userinput").submit(function(e) {
@@ -38,7 +37,7 @@ $("#primerStrings").click(function(){
     let newD = document.createElement("div");
 
     //loop to attach text input fields to paragraph element created above
-    for (let y = 0; y < $('#primers').val(); y++) {
+    for (let i = 0; i < $('#primers').val(); i++) {
         let textField = document.createElement("input");
         textField.type = "text";
         textField.placeholder = "Primer Name";
@@ -57,7 +56,7 @@ $('#sampleStrings').click(function() {
     let newDiv = document.createElement("div");
 
     //loop to attach text input fields to paragraph element created above
-    for (let y = 0; y < $('#samples').val(); y++) {
+    for (let i = 0; i < $('#samples').val(); i++) {
         let textField = document.createElement("input");
         textField.type = "text";
         textField.placeholder = "Sample Name";
@@ -74,7 +73,6 @@ $('#sampleStrings').click(function() {
 //function called within calculate button function to 
 //determine the dimensions of the plate after size is chosen
 function detDimensions() {
-
     if ($('#plateSize').val() == "24") {
         columns = 8;
         rows = 3;
@@ -112,17 +110,20 @@ function printCalculatedValues(calcValuesDiv) {
 }
 //Creates and fills the two dimensional array
 function initialize2DArray() {
-    let sampleNumber = 1;
-    let pcrPlateArray = new Array(columns);
+    crArray = detDimensions();
+    let pcrPlateArray = new Array(crArray[0]);
 
     //Loop to add array of size rows to each column
     for (let u = 0; u < pcrPlateArray.length; u++) {
-        pcrPlateArray[u] = new Array(rows);
+        pcrPlateArray[u] = new Array(crArray[1]);
     }
     return pcrPlateArray;
 }
 
+var primerColorsArray = initialize2DArray();
+//returns array representing a filled PCR plate
 function createPCRPlateArray() {
+    console.log(primerColorsArray);
     let pcrPlateArray = initialize2DArray();
     let countPCR = 0;
     let duplicates = 1;
@@ -130,21 +131,23 @@ function createPCRPlateArray() {
     //Loop to put sampleNumbers into 2D array.
     for (let r = 1; r <= rows; r++) {
         for (let c = 1; c <= columns; c++) {
-            pcrPlateArray[r][c] = sampleNumber;
-            //FIXME: seems to recalculate number of duplicates by row
-            //e.g. 6 duplicates; 2 on first row, move onto next row; another 6 added because it restarts (8 total)
-            //Checks if current column # is evenly divisible by duplicatesUI
+            if ((sampleNumber != 0)) {
+                primerColorsArray[r][c] = sampleNumber;
+                pcrPlateArray[r][c] = sampleInputArray[sampleNumber-1].value;
+            } else { 
+                pcrPlateArray[r][c] = 0;
+                primerColorsArray[r][c] = sampleNumber; }
+            //pcrPlateArray[r][c] = ((sampleNumber-1) < $('#samples').val()) ? sampleInputArray[sampleNumber-1].value : sampleNumber;
+            
             function log() {
                 console.log("New section");
                 console.log("Sample Number: " + sampleNumber);
+                console.log("PCRPlateArray[r][c] " + pcrPlateArray[r][c]);
+                console.log("primerColorsArray[r][c] " + primerColorsArray[r][c]);
                 console.log("c: " + c);
                 console.log("$('#duplicates').val(): " + $('#duplicates').val());
-                console.log("c % $('#duplicates').val(): " + c % $('#duplicates').val());
-            } //log();
-            console.log(duplicates);
-            console.log(duplicates == $('#duplicates').val());
+            } log();
             if ((duplicates == $('#duplicates').val())) { 
-                console.log(duplicates);
                 sampleNumber++; //if it is evenly divisible, move on to next number
                 duplicates = 0;
                 //check if current sampleNumber is bigger than what user input for # of total samples
@@ -203,16 +206,15 @@ $('#calculate').click(function() {
                     let isBlack = false;
                     if (pcrPlateArray[l][k] == 0) {
                         isBlack = true;
-                        //pcrPlateArray[l][k] = ""; //set '0' cells as empty
-                    } else if ((pcrPlateArray[l][k] === 1 && prev !== 1 && prev !== -1) || l === 1 && k === 1) {
-                        //color = '#' + Math.floor(Math.random() * 16777215).toString(16);
+                    } //HUUUUUGE ISSUE HERE. FUNCTIONALITY IS BASED ON NUMBERS IN PCRPLATEARRAY BUT THERE AREN'T ANY B/C OF SAMPLE NAME FUNCTIONALITY!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    else if ((primerColorsArray[l][k] === 1 && prev !== 1 && prev !== -1) || l === 1 && k === 1) {
                         color = colorPaletteArray[colorPalette];
                         console.log(color);
                         colorPrimerArray.push(color);
                         console.log(k + ": " + colorPrimerArray.length);
                         colorPalette++;
                     }
-                    prev = pcrPlateArray[l][k];
+                    prev = primerColorsArray[l][k];
                     let td = tr.insertCell();
                     td.style.backgroundColor = (isBlack ? "#000000" : color);
                     td.textContent = pcrPlateArray[l][k];
