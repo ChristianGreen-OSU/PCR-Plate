@@ -6,4 +6,4 @@ Feel free to add comments and ask questions in the lab to me directly.
 
 The website that is linked to this code is:  
 
-christiangreen-osu.github.io/PCR-Plate/
+https://christiangreen-osu.github.io/PCR-Plate/
