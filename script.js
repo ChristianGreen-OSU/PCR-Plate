@@ -12,7 +12,7 @@ var rows;
 //stops default form refresh. Allows page to be built after hitting 'Calculate!' button
 $("#userinput").submit(function(e) {
     e.preventDefault();
-    console.log("jQuery success!");
+    //console.log("jQuery success!");
 });
 
 //User inputted values
@@ -110,7 +110,8 @@ function printCalculatedValues(calcValuesDiv) {
 }
 //Creates and fills the two dimensional array
 function initialize2DArray() {
-    crArray = detDimensions();
+    let crArray = detDimensions();
+    console.log("crArray in init2d (c r): " + crArray[0] + " " + crArray[1]);
     let pcrPlateArray = new Array(crArray[0]);
 
     //Loop to add array of size rows to each column
@@ -120,9 +121,10 @@ function initialize2DArray() {
     return pcrPlateArray;
 }
 
-var primerColorsArray = initialize2DArray();
+var primerColorsArray;
 //returns array representing a filled PCR plate
 function createPCRPlateArray() {
+    primerColorsArray = initialize2DArray();
     console.log(primerColorsArray);
     let pcrPlateArray = initialize2DArray();
     let countPCR = 0;
@@ -131,24 +133,26 @@ function createPCRPlateArray() {
     //Loop to put sampleNumbers into 2D array.
     for (let r = 1; r <= rows; r++) {
         for (let c = 1; c <= columns; c++) {
+            primerColorsArray[r][c] = sampleNumber;
             if ((sampleNumber != 0)) {
-                primerColorsArray[r][c] = sampleNumber;
                 pcrPlateArray[r][c] = sampleInputArray[sampleNumber-1].value;
             } else { 
                 pcrPlateArray[r][c] = 0;
-                primerColorsArray[r][c] = sampleNumber; }
-            //pcrPlateArray[r][c] = ((sampleNumber-1) < $('#samples').val()) ? sampleInputArray[sampleNumber-1].value : sampleNumber;
-            
+                console.log(sampleNumber);
+                log();
+            }
+
             function log() {
                 console.log("New section");
+                console.log("c: " + c);
+                console.log("r: " + r);
                 console.log("Sample Number: " + sampleNumber);
                 console.log("PCRPlateArray[r][c] " + pcrPlateArray[r][c]);
                 console.log("primerColorsArray[r][c] " + primerColorsArray[r][c]);
-                console.log("c: " + c);
                 console.log("$('#duplicates').val(): " + $('#duplicates').val());
             } log();
             if ((duplicates == $('#duplicates').val())) { 
-                sampleNumber++; //if it is evenly divisible, move on to next number
+                sampleNumber++; 
                 duplicates = 0;
                 //check if current sampleNumber is bigger than what user input for # of total samples
                 if (sampleNumber > $('#samples').val()) {
@@ -180,8 +184,8 @@ $('#calculate').click(function() {
         let crArray = detDimensions();
         let columns = crArray[0];
         let rows = crArray[1];
-        console.log(" columns:" + columns + " rows:" + rows + " plateSize:" + $('#plateSize').val());
-        console.log($('#primers').val() + " primers, " + $('#samples').val() + " samples, " + $('#duplicates').val() + " duplicates");
+        //console.log(" columns:" + columns + " rows:" + rows + " plateSize:" + $('#plateSize').val());
+        //console.log($('#primers').val() + " primers, " + $('#samples').val() + " samples, " + $('#duplicates').val() + " duplicates");
 
         calculateValues();
         //1 line sentence letting you know all calculated values.
@@ -206,12 +210,12 @@ $('#calculate').click(function() {
                     let isBlack = false;
                     if (pcrPlateArray[l][k] == 0) {
                         isBlack = true;
-                    } //HUUUUUGE ISSUE HERE. FUNCTIONALITY IS BASED ON NUMBERS IN PCRPLATEARRAY BUT THERE AREN'T ANY B/C OF SAMPLE NAME FUNCTIONALITY!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    } 
                     else if ((primerColorsArray[l][k] === 1 && prev !== 1 && prev !== -1) || l === 1 && k === 1) {
                         color = colorPaletteArray[colorPalette];
-                        console.log(color);
+                        //console.log(color);
                         colorPrimerArray.push(color);
-                        console.log(k + ": " + colorPrimerArray.length);
+                        //console.log(k + ": " + colorPrimerArray.length);
                         colorPalette++;
                     }
                     prev = primerColorsArray[l][k];
@@ -227,12 +231,12 @@ $('#calculate').click(function() {
         let legendTable = document.createElement("table");
         let legendTitle = document.createElement("p");
         legendTitle.textContent = "Primers:";
-        console.log(colorPrimerArray);
+        //console.log(colorPrimerArray);
         let tr = legendTable.insertRow();
         for (let w = 0; w < colorPrimerArray.length; w++) {
             let td = tr.insertCell();
             td.style.backgroundColor = (colorPaletteArray[w]);
-            console.log(colorPaletteArray[w]);
+            //console.log(colorPaletteArray[w]);
             td.textContent = primerInputArray[w].value;
         }
         legendDiv.appendChild(legendTitle);
